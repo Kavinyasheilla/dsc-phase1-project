@@ -442,6 +442,7 @@
       <column datatype='integer' name='[Day]' role='dimension' type='quantitative' />
       <column datatype='string' name='[Event.Id]' role='dimension' type='nominal' />
       <column datatype='string' name='[Injury.Severity]' role='dimension' type='nominal' />
+      <column datatype='string' name='[Make]' role='dimension' type='nominal' />
       <column datatype='integer' name='[Month]' role='dimension' type='quantitative' />
       <column datatype='string' name='[Purpose.of.flight]' role='dimension' type='nominal' />
       <column datatype='string' name='[Weather.Condition]' role='dimension' type='nominal' />
@@ -451,6 +452,12 @@
       <column-instance column='[Injury.Severity]' derivation='None' name='[none:Injury.Severity:nk]' pivot='key' type='nominal' />
       <column-instance column='[Purpose.of.flight]' derivation='None' name='[none:Purpose.of.flight:nk]' pivot='key' type='nominal' />
       <column-instance column='[Weather.Condition]' derivation='None' name='[none:Weather.Condition:nk]' pivot='key' type='nominal' />
+      <group caption='Action (Injury.Severity,Make)' hidden='true' name='[Action (Injury.Severity,Make)]' name-style='unqualified' user:auto-column='sheet_link'>
+        <groupfilter function='crossjoin'>
+          <groupfilter function='level-members' level='[Injury.Severity]' />
+          <groupfilter function='level-members' level='[Make]' />
+        </groupfilter>
+      </group>
       <group hidden='true' name='[Exclusions (Event.Id,Purpose.of.flight)]' name-style='unqualified' user:auto-column='exclude'>
         <groupfilter function='crossjoin'>
           <groupfilter function='level-members' level='[none:Event.Id:nk]' />
@@ -949,6 +956,48 @@
   <mapsources>
     <mapsource name='Tableau' />
   </mapsources>
+  <actions>
+    <action caption='Filter 1 (generated)' name='[Action1_992F22C3FBDA4F06AE5C298A19361199]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='Data analysis Dashboard' type='sheet' worksheet='Accidents trends over time' />
+      <command command='tsc:tsl-filter'>
+        <param name='special-fields' value='all' />
+        <param name='target' value='Data analysis Dashboard' />
+      </command>
+    </action>
+    <action caption='Filter 2 (generated)' name='[Action2_6782DD5EC4B44A70BD97CB3AD656D21D]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='Data analysis Dashboard' type='sheet' worksheet='Accidents by Manufacture severity ' />
+      <command command='tsc:tsl-filter'>
+        <param name='special-fields' value='all' />
+        <param name='target' value='Data analysis Dashboard' />
+      </command>
+    </action>
+    <action caption='Filter 3 (generated)' name='[Action3_0D45DA7D8F56451694601828476554C6]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='Data analysis Dashboard' type='sheet' worksheet='Geographical hotspots' />
+      <command command='tsc:tsl-filter'>
+        <param name='special-fields' value='all' />
+        <param name='target' value='Data analysis Dashboard' />
+      </command>
+    </action>
+    <action caption='Filter 4 (generated)' name='[Action4_41CF5042C21C4FFCAFE34D544FF08FFD]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='Data analysis Dashboard' type='sheet' worksheet='Weather factors' />
+      <command command='tsc:tsl-filter'>
+        <param name='special-fields' value='all' />
+        <param name='target' value='Data analysis Dashboard' />
+      </command>
+    </action>
+    <action caption='Filter 5 (generated)' name='[Action5_9965AE69A61F403297A42A219B3E6716]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='Data analysis Dashboard' type='sheet' worksheet='Purpose of flight by Number of fatals' />
+      <command command='tsc:tsl-filter'>
+        <param name='special-fields' value='all' />
+        <param name='target' value='Data analysis Dashboard' />
+      </command>
+    </action>
+  </actions>
   <worksheets>
     <worksheet name='Accidents by Manufacture severity '>
       <table>
@@ -1032,6 +1081,8 @@
           </datasources>
           <datasource-dependencies datasource='federated.1wr7onv03pzzcr146z7un0vi4nx5'>
             <column datatype='string' name='[Accident.Number]' role='dimension' type='nominal' />
+            <column datatype='string' name='[Injury.Severity]' role='dimension' type='nominal' />
+            <column datatype='string' name='[Make]' role='dimension' type='nominal' />
             <column datatype='date' name='[Publication.Date]' role='dimension' type='ordinal' />
             <column datatype='real' name='[Total.Uninjured]' role='measure' type='quantitative' />
             <column-instance column='[Total.Uninjured]' derivation='Median' name='[med:Total.Uninjured:qk]' pivot='key' type='quantitative' />
@@ -1039,11 +1090,18 @@
             <column-instance column='[Total.Uninjured]' derivation='Sum' name='[sum:Total.Uninjured:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Publication.Date]' derivation='Year-Trunc' name='[tyr:Publication.Date:qk]' pivot='key' type='quantitative' />
           </datasource-dependencies>
+          <filter class='categorical' column='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[Action (Injury.Severity,Make)]'>
+            <groupfilter function='crossjoin' user:ui-action-filter='[Action2_6782DD5EC4B44A70BD97CB3AD656D21D]' user:ui-enumeration='all' user:ui-marker='enumerate'>
+              <groupfilter function='level-members' level='[Injury.Severity]' />
+              <groupfilter function='level-members' level='[Make]' />
+            </groupfilter>
+          </filter>
           <filter class='categorical' column='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Accident.Number:nk]'>
             <groupfilter function='level-members' level='[none:Accident.Number:nk]' user:ui-manual-selection='true' user:ui-manual-selection-all-when-empty='true' user:ui-manual-selection-is-empty='true' user:ui-marker='enumerate' />
           </filter>
           <slices>
             <column>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Accident.Number:nk]</column>
+            <column>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[Action (Injury.Severity,Make)]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -1106,12 +1164,23 @@
           </mapsources>
           <datasource-dependencies datasource='federated.1wr7onv03pzzcr146z7un0vi4nx5'>
             <column datatype='string' name='[Country]' role='dimension' semantic-role='[Country].[ISO3166_2]' type='nominal' />
+            <column datatype='string' name='[Injury.Severity]' role='dimension' type='nominal' />
             <column datatype='string' name='[Location]' role='dimension' type='nominal' />
+            <column datatype='string' name='[Make]' role='dimension' type='nominal' />
             <column datatype='real' name='[Total.Injuries]' role='measure' type='quantitative' />
             <column-instance column='[Country]' derivation='None' name='[none:Country:nk]' pivot='key' type='nominal' />
             <column-instance column='[Location]' derivation='None' name='[none:Location:nk]' pivot='key' type='nominal' />
             <column-instance column='[Total.Injuries]' derivation='Sum' name='[sum:Total.Injuries:qk]' pivot='key' type='quantitative' />
           </datasource-dependencies>
+          <filter class='categorical' column='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[Action (Injury.Severity,Make)]'>
+            <groupfilter function='crossjoin' user:ui-action-filter='[Action2_6782DD5EC4B44A70BD97CB3AD656D21D]' user:ui-enumeration='all' user:ui-marker='enumerate'>
+              <groupfilter function='level-members' level='[Injury.Severity]' />
+              <groupfilter function='level-members' level='[Make]' />
+            </groupfilter>
+          </filter>
+          <slices>
+            <column>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[Action (Injury.Severity,Make)]</column>
+          </slices>
           <aggregation value='true' />
         </view>
         <style>
@@ -1150,12 +1219,20 @@
           </datasources>
           <datasource-dependencies datasource='federated.1wr7onv03pzzcr146z7un0vi4nx5'>
             <column datatype='string' name='[Event.Id]' role='dimension' type='nominal' />
+            <column datatype='string' name='[Injury.Severity]' role='dimension' type='nominal' />
+            <column datatype='string' name='[Make]' role='dimension' type='nominal' />
             <column datatype='string' name='[Purpose.of.flight]' role='dimension' type='nominal' />
             <column datatype='real' name='[Total.Injuries]' role='measure' type='quantitative' />
             <column-instance column='[Event.Id]' derivation='None' name='[none:Event.Id:nk]' pivot='key' type='nominal' />
             <column-instance column='[Purpose.of.flight]' derivation='None' name='[none:Purpose.of.flight:nk]' pivot='key' type='nominal' />
             <column-instance column='[Total.Injuries]' derivation='Sum' name='[sum:Total.Injuries:qk]' pivot='key' type='quantitative' />
           </datasource-dependencies>
+          <filter class='categorical' column='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[Action (Injury.Severity,Make)]'>
+            <groupfilter function='crossjoin' user:ui-action-filter='[Action2_6782DD5EC4B44A70BD97CB3AD656D21D]' user:ui-enumeration='all' user:ui-marker='enumerate'>
+              <groupfilter function='level-members' level='[Injury.Severity]' />
+              <groupfilter function='level-members' level='[Make]' />
+            </groupfilter>
+          </filter>
           <filter class='categorical' column='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[Exclusions (Event.Id,Purpose.of.flight)]'>
             <groupfilter function='except' user:ui-domain='database' user:ui-enumeration='exclusive' user:ui-marker='enumerate'>
               <groupfilter function='crossjoin'>
@@ -1170,6 +1247,7 @@
           </filter>
           <slices>
             <column>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[Exclusions (Event.Id,Purpose.of.flight)]</column>
+            <column>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[Action (Injury.Severity,Make)]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -1206,60 +1284,6 @@
       </table>
       <simple-id uuid='{4E767E7F-2807-44AE-9E75-5B6EBB9137F0}' />
     </worksheet>
-    <worksheet name='Sheet 6'>
-      <table>
-        <view>
-          <datasources>
-            <datasource caption='Aviation_Data_Cleaned' name='federated.1wr7onv03pzzcr146z7un0vi4nx5' />
-          </datasources>
-          <datasource-dependencies datasource='federated.1wr7onv03pzzcr146z7un0vi4nx5'>
-            <column datatype='string' name='[Accident.Number]' role='dimension' type='nominal' />
-            <column caption='Aircraft Model' datatype='string' name='[Aircraft_Model]' role='dimension' type='nominal' />
-            <column datatype='string' name='[Broad.phase.of.flight]' role='dimension' type='nominal' />
-            <column datatype='string' name='[Event.Id]' role='dimension' type='nominal' />
-            <column datatype='string' name='[Weather.Condition]' role='dimension' type='nominal' />
-            <column-instance column='[Aircraft_Model]' derivation='None' name='[none:Aircraft_Model:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Broad.phase.of.flight]' derivation='None' name='[none:Broad.phase.of.flight:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Event.Id]' derivation='None' name='[none:Event.Id:nk]' pivot='key' type='nominal' />
-            <column-instance column='[Weather.Condition]' derivation='None' name='[none:Weather.Condition:nk]' pivot='key' type='nominal' />
-          </datasource-dependencies>
-          <filter class='categorical' column='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Aircraft_Model:nk]'>
-            <groupfilter count='10' end='top' function='end' units='records' user:ui-marker='end' user:ui-top-by-field='true'>
-              <groupfilter direction='DESC' expression='COUNT([Accident.Number])' function='order' user:ui-marker='order'>
-                <groupfilter function='level-members' level='[none:Aircraft_Model:nk]' user:ui-manual-selection='true' user:ui-manual-selection-all-when-empty='true' user:ui-manual-selection-is-empty='true' user:ui-marker='enumerate' />
-              </groupfilter>
-            </groupfilter>
-          </filter>
-          <filter class='categorical' column='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Event.Id:nk]'>
-            <groupfilter count='10' end='top' function='end' units='records' user:ui-marker='end' user:ui-top-by-field='true'>
-              <groupfilter direction='DESC' expression='COUNT([Accident.Number])' function='order' user:ui-marker='order'>
-                <groupfilter function='level-members' level='[none:Event.Id:nk]' user:ui-manual-selection='true' user:ui-manual-selection-all-when-empty='true' user:ui-manual-selection-is-empty='true' user:ui-marker='enumerate' />
-              </groupfilter>
-            </groupfilter>
-          </filter>
-          <slices>
-            <column>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Event.Id:nk]</column>
-            <column>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Aircraft_Model:nk]</column>
-          </slices>
-          <aggregation value='true' />
-        </view>
-        <style />
-        <panes>
-          <pane selection-relaxation-option='selection-relaxation-allow'>
-            <view>
-              <breakdown value='auto' />
-            </view>
-            <mark class='Automatic' />
-            <encodings>
-              <color column='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Weather.Condition:nk]' />
-            </encodings>
-          </pane>
-        </panes>
-        <rows>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Broad.phase.of.flight:nk]</rows>
-        <cols>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Aircraft_Model:nk]</cols>
-      </table>
-      <simple-id uuid='{8AD0BA7D-BCB3-4B70-9963-312EF0FE3782}' />
-    </worksheet>
     <worksheet lock-updates='true' name='Top casual factors'>
       <table>
         <view>
@@ -1269,9 +1293,20 @@
           <datasource-dependencies datasource='federated.1wr7onv03pzzcr146z7un0vi4nx5'>
             <column datatype='string' name='[Broad.phase.of.flight]' role='dimension' type='nominal' />
             <column datatype='string' name='[Event.Id]' role='dimension' type='nominal' />
+            <column datatype='string' name='[Injury.Severity]' role='dimension' type='nominal' />
+            <column datatype='string' name='[Make]' role='dimension' type='nominal' />
             <column-instance column='[Broad.phase.of.flight]' derivation='None' name='[none:Broad.phase.of.flight:nk]' pivot='key' type='nominal' />
             <column-instance column='[Event.Id]' derivation='None' name='[none:Event.Id:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
+          <filter class='categorical' column='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[Action (Injury.Severity,Make)]'>
+            <groupfilter function='crossjoin' user:ui-action-filter='[Action2_6782DD5EC4B44A70BD97CB3AD656D21D]' user:ui-enumeration='all' user:ui-marker='enumerate'>
+              <groupfilter function='level-members' level='[Injury.Severity]' />
+              <groupfilter function='level-members' level='[Make]' />
+            </groupfilter>
+          </filter>
+          <slices>
+            <column>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[Action (Injury.Severity,Make)]</column>
+          </slices>
           <aggregation value='true' />
         </view>
         <style />
@@ -1294,16 +1329,79 @@
       </table>
       <simple-id uuid='{3E42DFBD-2116-4C22-9D8C-2D61F1A4042F}' />
     </worksheet>
+    <worksheet name='Weather factors'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Aviation_Data_Cleaned' name='federated.1wr7onv03pzzcr146z7un0vi4nx5' />
+          </datasources>
+          <datasource-dependencies datasource='federated.1wr7onv03pzzcr146z7un0vi4nx5'>
+            <column datatype='string' name='[Accident.Number]' role='dimension' type='nominal' />
+            <column caption='Aircraft Model' datatype='string' name='[Aircraft_Model]' role='dimension' type='nominal' />
+            <column datatype='string' name='[Broad.phase.of.flight]' role='dimension' type='nominal' />
+            <column datatype='string' name='[Event.Id]' role='dimension' type='nominal' />
+            <column datatype='string' name='[Injury.Severity]' role='dimension' type='nominal' />
+            <column datatype='string' name='[Make]' role='dimension' type='nominal' />
+            <column datatype='string' name='[Weather.Condition]' role='dimension' type='nominal' />
+            <column-instance column='[Aircraft_Model]' derivation='None' name='[none:Aircraft_Model:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Broad.phase.of.flight]' derivation='None' name='[none:Broad.phase.of.flight:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Event.Id]' derivation='None' name='[none:Event.Id:nk]' pivot='key' type='nominal' />
+            <column-instance column='[Weather.Condition]' derivation='None' name='[none:Weather.Condition:nk]' pivot='key' type='nominal' />
+          </datasource-dependencies>
+          <filter class='categorical' column='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[Action (Injury.Severity,Make)]'>
+            <groupfilter function='crossjoin' user:ui-action-filter='[Action2_6782DD5EC4B44A70BD97CB3AD656D21D]' user:ui-enumeration='all' user:ui-marker='enumerate'>
+              <groupfilter function='level-members' level='[Injury.Severity]' />
+              <groupfilter function='level-members' level='[Make]' />
+            </groupfilter>
+          </filter>
+          <filter class='categorical' column='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Aircraft_Model:nk]'>
+            <groupfilter count='10' end='top' function='end' units='records' user:ui-marker='end' user:ui-top-by-field='true'>
+              <groupfilter direction='DESC' expression='COUNT([Accident.Number])' function='order' user:ui-marker='order'>
+                <groupfilter function='level-members' level='[none:Aircraft_Model:nk]' user:ui-manual-selection='true' user:ui-manual-selection-all-when-empty='true' user:ui-manual-selection-is-empty='true' user:ui-marker='enumerate' />
+              </groupfilter>
+            </groupfilter>
+          </filter>
+          <filter class='categorical' column='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Event.Id:nk]'>
+            <groupfilter count='10' end='top' function='end' units='records' user:ui-marker='end' user:ui-top-by-field='true'>
+              <groupfilter direction='DESC' expression='COUNT([Accident.Number])' function='order' user:ui-marker='order'>
+                <groupfilter function='level-members' level='[none:Event.Id:nk]' user:ui-manual-selection='true' user:ui-manual-selection-all-when-empty='true' user:ui-manual-selection-is-empty='true' user:ui-marker='enumerate' />
+              </groupfilter>
+            </groupfilter>
+          </filter>
+          <slices>
+            <column>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Event.Id:nk]</column>
+            <column>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Aircraft_Model:nk]</column>
+            <column>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[Action (Injury.Severity,Make)]</column>
+          </slices>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+            <encodings>
+              <color column='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Weather.Condition:nk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Broad.phase.of.flight:nk]</rows>
+        <cols>[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Aircraft_Model:nk]</cols>
+      </table>
+      <simple-id uuid='{8AD0BA7D-BCB3-4B70-9963-312EF0FE3782}' />
+    </worksheet>
   </worksheets>
   <dashboards>
-    <dashboard enable-sort-zone-taborder='true' name='Dashboard 1'>
+    <dashboard enable-sort-zone-taborder='true' name='Data analysis Dashboard'>
       <style />
       <size maxheight='860' maxwidth='1600' minheight='800' minwidth='1020' sizing-mode='range' />
       <zones>
         <zone h='100000' id='4' type-v2='layout-basic' w='100000' x='0' y='0'>
-          <zone h='98004' id='21' param='horz' type-v2='layout-flow' w='98990' x='505' y='998'>
-            <zone h='98004' id='13' param='vert' type-v2='layout-flow' w='88895' x='505' y='998'>
-              <zone fixed-size='60' h='8479' id='14' is-fixed='true' type-v2='title' w='88895' x='505' y='998'>
+          <zone h='98004' id='21' param='horz' type-v2='layout-flow' w='98992' x='504' y='998'>
+            <zone h='98004' id='13' param='vert' type-v2='layout-flow' w='88916' x='504' y='998'>
+              <zone fixed-size='60' h='8479' id='14' is-fixed='true' type-v2='title' w='88916' x='504' y='998'>
                 <zone-style>
                   <format attr='border-color' value='#000000' />
                   <format attr='border-style' value='none' />
@@ -1311,9 +1409,9 @@
                   <format attr='margin' value='4' />
                 </zone-style>
               </zone>
-              <zone h='89525' id='7' param='horz' type-v2='layout-flow' w='88895' x='505' y='9477'>
-                <zone h='89525' id='5' type-v2='layout-basic' w='88895' x='505' y='9477'>
-                  <zone h='44761' id='11' name='Top casual factors' w='3372' x='86028' y='9477'>
+              <zone h='89525' id='7' param='horz' type-v2='layout-flow' w='88916' x='504' y='9477'>
+                <zone h='89525' id='5' type-v2='layout-basic' w='88916' x='504' y='9477'>
+                  <zone h='44759' id='11' name='Top casual factors' w='3376' x='86044' y='9477'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -1321,7 +1419,7 @@
                       <format attr='margin' value='4' />
                     </zone-style>
                   </zone>
-                  <zone h='44761' id='19' name='Accidents trends over time' w='33689' x='505' y='9477'>
+                  <zone h='44759' id='19' name='Accidents trends over time' w='33694' x='504' y='9477'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -1329,7 +1427,7 @@
                       <format attr='margin' value='4' />
                     </zone-style>
                   </zone>
-                  <zone h='44764' id='23' name='Geographical hotspots' w='55206' x='34194' y='54238'>
+                  <zone h='44766' id='23' name='Geographical hotspots' w='55222' x='34198' y='54236'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -1337,7 +1435,7 @@
                       <format attr='margin' value='4' />
                     </zone-style>
                   </zone>
-                  <zone h='44764' id='25' name='Accidents by Manufacture severity ' w='33689' x='505' y='54238'>
+                  <zone h='44766' id='25' name='Accidents by Manufacture severity ' w='33694' x='504' y='54236'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -1345,7 +1443,15 @@
                       <format attr='margin' value='4' />
                     </zone-style>
                   </zone>
-                  <zone h='44761' id='27' name='Purpose of flight by Number of fatals' w='51834' x='34194' y='9477'>
+                  <zone h='44759' id='27' name='Purpose of flight by Number of fatals' w='25924' x='34198' y='9477'>
+                    <zone-style>
+                      <format attr='border-color' value='#000000' />
+                      <format attr='border-style' value='none' />
+                      <format attr='border-width' value='0' />
+                      <format attr='margin' value='4' />
+                    </zone-style>
+                  </zone>
+                  <zone h='44759' id='28' name='Weather factors' w='25922' x='60122' y='9477'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -1356,8 +1462,8 @@
                 </zone>
               </zone>
             </zone>
-            <zone fixed-size='160' h='98004' id='20' is-fixed='true' param='vert' type-v2='layout-flow' w='10095' x='89400' y='998'>
-              <zone h='10474' id='22' name='Accidents trends over time' pane-specification-id='1' param='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[:Measure Names]' type-v2='color' w='10095' x='89400' y='998'>
+            <zone fixed-size='160' h='98004' id='20' is-fixed='true' param='vert' type-v2='layout-flow' w='10076' x='89420' y='998'>
+              <zone h='10474' id='22' name='Accidents trends over time' pane-specification-id='1' param='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[:Measure Names]' type-v2='color' w='10076' x='89420' y='998'>
                 <zone-style>
                   <format attr='border-color' value='#000000' />
                   <format attr='border-style' value='none' />
@@ -1365,7 +1471,7 @@
                   <format attr='margin' value='4' />
                 </zone-style>
               </zone>
-              <zone h='10100' id='24' name='Geographical hotspots' pane-specification-id='0' param='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[sum:Total.Injuries:qk]' type-v2='color' w='10095' x='89400' y='11472'>
+              <zone h='10100' id='24' name='Geographical hotspots' pane-specification-id='0' param='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[sum:Total.Injuries:qk]' type-v2='color' w='10076' x='89420' y='11472'>
                 <zone-style>
                   <format attr='border-color' value='#000000' />
                   <format attr='border-style' value='none' />
@@ -1373,7 +1479,15 @@
                   <format attr='margin' value='4' />
                 </zone-style>
               </zone>
-              <zone h='35412' id='26' name='Accidents by Manufacture severity ' pane-specification-id='0' param='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Injury.Severity:nk]' type-v2='color' w='10095' x='89400' y='21572'>
+              <zone h='35412' id='26' name='Accidents by Manufacture severity ' pane-specification-id='0' param='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Injury.Severity:nk]' type-v2='color' w='10076' x='89420' y='21572'>
+                <zone-style>
+                  <format attr='border-color' value='#000000' />
+                  <format attr='border-style' value='none' />
+                  <format attr='border-width' value='0' />
+                  <format attr='margin' value='4' />
+                </zone-style>
+              </zone>
+              <zone h='7357' id='29' name='Weather factors' pane-specification-id='0' param='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Weather.Condition:nk]' type-v2='color' w='10076' x='89420' y='56984'>
                 <zone-style>
                   <format attr='border-color' value='#000000' />
                   <format attr='border-style' value='none' />
@@ -1393,11 +1507,11 @@
       </zones>
       <devicelayouts>
         <devicelayout auto-generated='true' name='Phone'>
-          <size maxheight='1100' minheight='1100' sizing-mode='vscroll' />
+          <size maxheight='2100' minheight='2100' sizing-mode='vscroll' />
           <zones>
-            <zone h='100000' id='18' type-v2='layout-basic' w='100000' x='0' y='0'>
-              <zone h='98046' id='17' param='vert' type-v2='layout-flow' w='98874' x='563' y='977'>
-                <zone h='7082' id='14' type-v2='title' w='98874' x='563' y='977'>
+            <zone h='100000' id='31' type-v2='layout-basic' w='100000' x='0' y='0'>
+              <zone h='98004' id='30' param='vert' type-v2='layout-flow' w='98990' x='505' y='998'>
+                <zone fixed-size='60' h='8479' id='14' type-v2='title' w='88895' x='505' y='998'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -1406,7 +1520,88 @@
                     <format attr='padding' value='0' />
                   </zone-style>
                 </zone>
-                <zone fixed-size='280' h='45482' id='11' is-fixed='true' name='Top casual factors' w='24437' x='563' y='53541'>
+                <zone fixed-size='280' h='44760' id='19' is-fixed='true' name='Accidents trends over time' w='33688' x='505' y='9477'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                    <format attr='padding' value='0' />
+                  </zone-style>
+                </zone>
+                <zone h='10474' id='22' name='Accidents trends over time' pane-specification-id='1' param='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[:Measure Names]' type-v2='color' w='10095' x='89400' y='998'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                    <format attr='padding' value='0' />
+                  </zone-style>
+                </zone>
+                <zone fixed-size='280' h='44760' id='27' is-fixed='true' name='Purpose of flight by Number of fatals' w='25917' x='34193' y='9477'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                    <format attr='padding' value='0' />
+                  </zone-style>
+                </zone>
+                <zone fixed-size='280' h='44760' id='28' is-fixed='true' name='Weather factors' w='25917' x='60110' y='9477'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                    <format attr='padding' value='0' />
+                  </zone-style>
+                </zone>
+                <zone h='7357' id='29' name='Weather factors' pane-specification-id='0' param='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Weather.Condition:nk]' type-v2='color' w='10095' x='89400' y='56984'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                    <format attr='padding' value='0' />
+                  </zone-style>
+                </zone>
+                <zone fixed-size='280' h='44760' id='11' is-fixed='true' name='Top casual factors' w='3373' x='86027' y='9477'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                    <format attr='padding' value='0' />
+                  </zone-style>
+                </zone>
+                <zone fixed-size='280' h='44765' id='25' is-fixed='true' name='Accidents by Manufacture severity ' w='33688' x='505' y='54237'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                    <format attr='padding' value='0' />
+                  </zone-style>
+                </zone>
+                <zone h='35412' id='26' name='Accidents by Manufacture severity ' pane-specification-id='0' param='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Injury.Severity:nk]' type-v2='color' w='10095' x='89400' y='21572'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                    <format attr='padding' value='0' />
+                  </zone-style>
+                </zone>
+                <zone fixed-size='280' h='44765' id='23' is-fixed='true' name='Geographical hotspots' w='55207' x='34193' y='54237'>
+                  <zone-style>
+                    <format attr='border-color' value='#000000' />
+                    <format attr='border-style' value='none' />
+                    <format attr='border-width' value='0' />
+                    <format attr='margin' value='4' />
+                    <format attr='padding' value='0' />
+                  </zone-style>
+                </zone>
+                <zone h='10100' id='24' name='Geographical hotspots' pane-specification-id='0' param='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[sum:Total.Injuries:qk]' type-v2='color' w='10095' x='89400' y='11472'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
                     <format attr='border-style' value='none' />
@@ -1429,7 +1624,7 @@
       <simple-id uuid='{787E5AB2-BFE6-44B3-B5D9-A860730C2D89}' />
     </dashboard>
   </dashboards>
-  <windows saved-dpi-scale-factor='1.5' source-height='44'>
+  <windows source-height='44'>
     <window class='worksheet' name='Accidents trends over time'>
       <cards>
         <edge name='left'>
@@ -1537,7 +1732,7 @@
       </cards>
       <simple-id uuid='{FB46ED4F-C1C6-4A87-9EBD-2C619DD258BB}' />
     </window>
-    <window class='dashboard' name='Dashboard 1'>
+    <window class='dashboard' maximized='true' name='Data analysis Dashboard'>
       <viewpoints>
         <viewpoint name='Accidents by Manufacture severity ' />
         <viewpoint name='Accidents trends over time' />
@@ -1546,8 +1741,9 @@
         </viewpoint>
         <viewpoint name='Purpose of flight by Number of fatals' />
         <viewpoint name='Top casual factors' />
+        <viewpoint name='Weather factors' />
       </viewpoints>
-      <active id='11' />
+      <active id='27' />
       <simple-id uuid='{8E145582-156F-4EC6-A53C-9010C5D73558}' />
     </window>
     <window class='worksheet' name='Purpose of flight by Number of fatals'>
@@ -1578,7 +1774,7 @@
       </cards>
       <simple-id uuid='{A25463F5-046E-4C62-98D1-0540BB8198D8}' />
     </window>
-    <window class='worksheet' maximized='true' name='Sheet 6'>
+    <window class='worksheet' name='Weather factors'>
       <cards>
         <edge name='left'>
           <strip size='160'>
@@ -1599,7 +1795,7 @@
           </strip>
         </edge>
         <edge name='right'>
-          <strip size='0'>
+          <strip size='160'>
             <card pane-specification-id='0' param='[federated.1wr7onv03pzzcr146z7un0vi4nx5].[none:Weather.Condition:nk]' type='color' />
           </strip>
         </edge>
